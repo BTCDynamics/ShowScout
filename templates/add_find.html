@@ -7,14 +7,28 @@
     <div class="ss-kicker mb-2">New Find</div>
     <h1 class="ss-title mb-2">Add Find</h1>
     <p class="ss-subtitle mb-0">
-        Save enough detail to get back to the table later. Photos come next, but this lets testers try the workflow now.
+        Snap a photo, save the table, dealer, price, and notes, then find it again before you leave the show.
     </p>
 </div>
 
 <div class="card ss-card">
     <div class="card-header fw-bold">{{ show.name }}</div>
     <div class="card-body">
-        <form method="POST" action="{{ url_for('add_find', show_id=show.id) }}">
+        <form method="POST" action="{{ url_for('add_find', show_id=show.id) }}" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">Photo</label>
+                <input
+                    class="form-control"
+                    type="file"
+                    name="photo"
+                    accept="image/*"
+                    capture="environment"
+                >
+                <div class="form-text text-muted">
+                    On most phones this opens the camera. You can also choose an existing photo.
+                </div>
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Table Number</label>
                 <input class="form-control" name="table_number" placeholder="A12, 47, Back Wall..." autofocus>

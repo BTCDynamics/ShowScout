@@ -24,15 +24,33 @@
         {% if finds %}
             {% for find in finds %}
                 <a class="ss-show-row" href="{{ url_for('find_detail', find_id=find.id) }}">
-                    <div class="d-flex justify-content-between align-items-start gap-2">
-                        <div>
-                            <div class="fw-bold fs-5 lh-sm">
-                                Table {{ find.table_number or '?' }}
+                    <div class="d-flex gap-3 align-items-start">
+                        {% if find.image_filename %}
+                            <img
+                                src="{{ url_for('static', filename='uploads/' ~ find.image_filename) }}"
+                                alt="Saved find photo"
+                                style="width: 86px; height: 86px; object-fit: cover; border-radius: .85rem; background: #111827; flex: 0 0 auto;"
+                            >
+                        {% else %}
+                            <div style="width: 86px; height: 86px; display: grid; place-items: center; border-radius: .85rem; background: rgba(15,23,42,.65); color: #94a3b8; flex: 0 0 auto;">
+                                No Photo
                             </div>
-                            <div class="ss-muted small mt-1">
-                                {{ find.dealer_name or 'Unknown dealer' }}
-                                {% if find.price_seen is not none %} · ${{ "%.2f"|format(find.price_seen) }}{% endif %}
+                        {% endif %}
+
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div>
+                                    <div class="fw-bold fs-5 lh-sm">
+                                        Table {{ find.table_number or '?' }}
+                                    </div>
+                                    <div class="ss-muted small mt-1">
+                                        {{ find.dealer_name or 'Unknown dealer' }}
+                                        {% if find.price_seen is not none %} · ${{ "%.2f"|format(find.price_seen) }}{% endif %}
+                                    </div>
+                                </div>
+                                <span class="badge text-bg-info">View</span>
                             </div>
+
                             <div class="mt-2 d-flex flex-wrap gap-2">
                                 <span class="badge text-bg-secondary">{{ find.card_type or 'Raw' }}</span>
                                 <span class="badge {% if find.status == 'Bought' %}text-bg-success{% elif find.status == 'Passed' %}text-bg-secondary{% else %}text-bg-warning{% endif %}">
@@ -43,7 +61,6 @@
                                 <div class="ss-muted small mt-2">{{ find.notes }}</div>
                             {% endif %}
                         </div>
-                        <span class="badge text-bg-info">View</span>
                     </div>
                 </a>
             {% endfor %}
