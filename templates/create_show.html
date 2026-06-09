@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Create Show | ShowScout{% endblock %}
+
+{% block content %}
+<div class="ss-hero mb-3">
+    <div class="ss-kicker mb-2">New Show</div>
+    <h1 class="ss-title mb-2">Create Show</h1>
+    <p class="ss-subtitle mb-0">
+        Set up the event first. Then you can add finds with photos, table numbers, dealers, prices, and notes.
+    </p>
+</div>
+
+<div class="card ss-card">
+    <div class="card-header fw-bold">Show Details</div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('create_show') }}">
+            <div class="mb-3">
+                <label class="form-label">Show Name</label>
+                <input class="form-control" name="name" placeholder="Tupelo Card Show" required autofocus>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Venue / Location</label>
+                <input class="form-control" name="venue" placeholder="Tupelo, MS">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Show Date</label>
+                <input class="form-control" type="date" name="show_date">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" name="notes" rows="3" placeholder="Parking, entrance, rows to check, dealers to revisit..."></textarea>
+            </div>
+
+            <div class="d-grid gap-2 d-sm-flex">
+                <button class="btn btn-warning ss-big-btn fw-bold flex-fill" type="submit">Create Show</button>
+                <a class="btn btn-outline-light ss-big-btn flex-fill" href="{{ url_for('home') }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
