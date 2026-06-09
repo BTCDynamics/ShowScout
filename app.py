@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from models import db, Show
+from models import db, Show, Find
+
+
 
 app = Flask(__name__)
 app.secret_key = "showscout-dev-secret"
@@ -45,6 +48,56 @@ def create_show():
         return redirect(url_for("home"))
 
     return render_template("create_show.html")
+
+@app.route("/show/<int:show_id>")
+def show_detail(show_id):
+    show = Show.query.get_or_404(show_id)
+
+    return render_template(
+        "show_detail.html",
+        show=show
+    )
+
+
+@app.route(
+    "/show/<int:show_id>/add-find",
+    methods=["GET", "POST"]
+)
+def add_find(show_id):
+
+    show = Show.query.get_or_404(show_id)
+
+    if request.method == "POST":
+
+        new_find = Find(
+            show_id=show.id,
+            table_number=request.form.get("table_number"),
+            dealer_name=request.form.get("dealer_name"),
+            notes=request.form.get("notes"),
+            status="Interested"
+        )
+
+        db.session.add(new_find)
+        db.session.commit()
+
+        flash("Find saved.")
+
+        return redirect(
+            url_for(
+                "show_detail",
+                show_id=show.id
+            )
+        )
+
+    return render_template(
+        "add_find.html",
+        show=show
+    )
+
+
+
+
+
 
 
 if __name__ == "__main__":

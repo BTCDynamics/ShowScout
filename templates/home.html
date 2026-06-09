@@ -19,7 +19,8 @@
     <div class="card-body">
         {% if shows %}
             {% for show in shows %}
-                <a class="ss-show-row" href="#">
+                <a class="ss-show-row"
+   href="{{ url_for('show_detail', show_id=show.id) }}">
                     <div class="d-flex justify-content-between align-items-start gap-2">
                         <div>
                             <div class="fw-bold fs-5 lh-sm">{{ show.name }}</div>

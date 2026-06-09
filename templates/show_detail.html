@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ show.name }}</h2>
+
+<p>{{ show.venue or "" }}</p>
+
+<a class="btn btn-warning w-100 mb-3"
+   href="{{ url_for('add_find', show_id=show.id) }}">
+    + Add Find
+</a>
+
+{% if show.finds %}
+
+    {% for find in show.finds %}
+
+        <div class="card mb-2">
+            <div class="card-body">
+
+                <strong>
+                    Table {{ find.table_number or "?" }}
+                </strong>
+
+                <br>
+
+                {{ find.dealer_name or "Unknown Dealer" }}
+
+            </div>
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="alert alert-info">
+        No finds saved yet.
+    </div>
+
+{% endif %}
+
+{% endblock %}
