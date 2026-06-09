@@ -47,6 +47,19 @@
             </div>
         </div>
 
+        {% if find.card_type == 'Graded' %}
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <div class="ss-muted small">Grading Company</div>
+                    <div class="fs-5 fw-bold">{{ find.grading_company or '—' }}</div>
+                </div>
+                <div class="col-6">
+                    <div class="ss-muted small">Grade</div>
+                    <div class="fs-5 fw-bold">{{ find.grade or '—' }}</div>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="mb-3">
             <div class="ss-muted small">Notes</div>
             <div>{{ find.notes or 'No notes entered.' }}</div>

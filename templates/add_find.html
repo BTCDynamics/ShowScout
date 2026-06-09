@@ -46,12 +46,33 @@
 
             <div class="mb-3">
                 <label class="form-label">Raw or Graded</label>
-                <select class="form-select" name="card_type">
+                <select class="form-select" name="card_type" id="cardTypeSelect">
                     <option value="Raw" selected>Raw</option>
                     <option value="Graded">Graded</option>
                     <option value="Sealed">Sealed / Wax</option>
                     <option value="Other">Other Item</option>
                 </select>
+            </div>
+
+            <div class="ss-soft-panel mb-3" id="gradedFields" style="display: none;">
+                <div class="fw-bold mb-2">Grading Details</div>
+                <div class="mb-3">
+                    <label class="form-label">Grading Company</label>
+                    <select class="form-select" name="grading_company">
+                        <option value="">Select company</option>
+                        <option value="PSA">PSA</option>
+                        <option value="CGC">CGC</option>
+                        <option value="SGC">SGC</option>
+                        <option value="BGS">BGS / Beckett</option>
+                        <option value="TAG">TAG</option>
+                        <option value="CSG">CSG</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Grade</label>
+                    <input class="form-control" name="grade" placeholder="10, 9.5, 9, Authentic...">
+                </div>
             </div>
 
             <div class="mb-3">
@@ -75,4 +96,27 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+(function () {
+    const cardTypeSelect = document.getElementById("cardTypeSelect");
+    const gradedFields = document.getElementById("gradedFields");
+
+    function updateGradedFields() {
+        if (!cardTypeSelect || !gradedFields) {
+            return;
+        }
+
+        gradedFields.style.display = cardTypeSelect.value === "Graded" ? "block" : "none";
+    }
+
+    if (cardTypeSelect) {
+        cardTypeSelect.addEventListener("change", updateGradedFields);
+        updateGradedFields();
+    }
+})();
+</script>
 {% endblock %}

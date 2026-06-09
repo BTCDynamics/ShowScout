@@ -24,6 +24,8 @@ class Find(db.Model):
     dealer_name = db.Column(db.String(150))
     price_seen = db.Column(db.Float)
     card_type = db.Column(db.String(30), default="Raw")
+    grading_company = db.Column(db.String(50))
+    grade = db.Column(db.String(20))
     notes = db.Column(db.Text)
 
     status = db.Column(db.String(30), default="Interested")

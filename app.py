@@ -92,6 +92,18 @@ def ensure_database_columns():
         )
         db.session.commit()
 
+    if "grading_company" not in existing_columns:
+        db.session.execute(
+            text("ALTER TABLE find ADD COLUMN grading_company VARCHAR(50)")
+        )
+        db.session.commit()
+
+    if "grade" not in existing_columns:
+        db.session.execute(
+            text("ALTER TABLE find ADD COLUMN grade VARCHAR(20)")
+        )
+        db.session.commit()
+
 
 with app.app_context():
     db.create_all()
@@ -159,6 +171,11 @@ def add_find(show_id):
         price_seen = money_value(request.form.get("price_seen"))
         card_type = request.form.get("card_type") or "Raw"
         status = request.form.get("status") or "Interested"
+        grading_company = (request.form.get("grading_company") or "").strip() or None
+        grade = (request.form.get("grade") or "").strip() or None
+        if card_type != "Graded":
+            grading_company = None
+            grade = None
         notes = (request.form.get("notes") or "").strip() or None
         image_filename = save_find_photo(request.files.get("photo"))
 
@@ -169,6 +186,8 @@ def add_find(show_id):
             dealer_name=dealer_name,
             price_seen=price_seen,
             card_type=card_type,
+            grading_company=grading_company,
+            grade=grade,
             status=status,
             notes=notes,
         )

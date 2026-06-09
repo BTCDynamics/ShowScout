@@ -53,6 +53,9 @@
 
                             <div class="mt-2 d-flex flex-wrap gap-2">
                                 <span class="badge text-bg-secondary">{{ find.card_type or 'Raw' }}</span>
+                                {% if find.card_type == 'Graded' and (find.grading_company or find.grade) %}
+                                    <span class="badge text-bg-info">{{ find.grading_company or 'Graded' }}{% if find.grade %} {{ find.grade }}{% endif %}</span>
+                                {% endif %}
                                 <span class="badge {% if find.status == 'Bought' %}text-bg-success{% elif find.status == 'Passed' %}text-bg-secondary{% else %}text-bg-warning{% endif %}">
                                     {{ find.status or 'Interested' }}
                                 </span>
