@@ -1,1 +1,51 @@
-#
+{% extends "base.html" %}
+
+{% block title %}Find Detail | ShowScout{% endblock %}
+
+{% block content %}
+<div class="ss-hero mb-3">
+    <div class="ss-kicker mb-2">Saved Find</div>
+    <h1 class="ss-title mb-2">Table {{ find.table_number or '?' }}</h1>
+    <p class="ss-subtitle mb-0">
+        {{ show.name }}{% if show.venue %} · {{ show.venue }}{% endif %}
+    </p>
+</div>
+
+<div class="card ss-card mb-3">
+    <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+        <span>Find Details</span>
+        <span class="badge {% if find.status == 'Bought' %}text-bg-success{% elif find.status == 'Passed' %}text-bg-secondary{% else %}text-bg-warning{% endif %}">
+            {{ find.status or 'Interested' }}
+        </span>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <div class="ss-muted small">Dealer / Company</div>
+            <div class="fs-5 fw-bold">{{ find.dealer_name or 'Unknown dealer' }}</div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-6">
+                <div class="ss-muted small">Listed Price</div>
+                <div class="fs-5 fw-bold">
+                    {% if find.price_seen is not none %}${{ "%.2f"|format(find.price_seen) }}{% else %}—{% endif %}
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="ss-muted small">Type</div>
+                <div class="fs-5 fw-bold">{{ find.card_type or 'Raw' }}</div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="ss-muted small">Notes</div>
+            <div>{{ find.notes or 'No notes entered.' }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="d-grid gap-2">
+    <a class="btn btn-warning ss-big-btn" href="{{ url_for('show_detail', show_id=show.id) }}">Back to Show</a>
+    <a class="btn btn-outline-light ss-big-btn" href="{{ url_for('home') }}">My Shows</a>
+</div>
+{% endblock %}

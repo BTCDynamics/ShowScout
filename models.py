@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
+
 db = SQLAlchemy()
 
 
@@ -22,6 +23,7 @@ class Find(db.Model):
     table_number = db.Column(db.String(50))
     dealer_name = db.Column(db.String(150))
     price_seen = db.Column(db.Float)
+    card_type = db.Column(db.String(30), default="Raw")
     notes = db.Column(db.Text)
 
     status = db.Column(db.String(30), default="Interested")

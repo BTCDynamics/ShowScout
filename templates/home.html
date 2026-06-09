@@ -7,7 +7,7 @@
     <div class="ss-kicker mb-2">Card Show Memory Tool</div>
     <h1 class="ss-title mb-2">Never forget where you saw that card.</h1>
     <p class="ss-subtitle mb-0">
-        Snap a photo, save the table number, dealer, price, and notes, then find it again before you leave the show.
+        Snap a photo, save the table number, dealer, listed price, and notes, then find it again before you leave the show.
     </p>
 </div>
 
@@ -19,8 +19,7 @@
     <div class="card-body">
         {% if shows %}
             {% for show in shows %}
-                <a class="ss-show-row"
-   href="{{ url_for('show_detail', show_id=show.id) }}">
+                <a class="ss-show-row" href="{{ url_for('show_detail', show_id=show.id) }}">
                     <div class="d-flex justify-content-between align-items-start gap-2">
                         <div>
                             <div class="fw-bold fs-5 lh-sm">{{ show.name }}</div>
@@ -32,7 +31,7 @@
                                 <div class="ss-muted small mt-2">{{ show.notes }}</div>
                             {% endif %}
                         </div>
-                        <span class="badge text-bg-secondary">Finds next</span>
+                        <span class="badge text-bg-warning">Open</span>
                     </div>
                 </a>
             {% endfor %}

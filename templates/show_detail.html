@@ -1,42 +1,63 @@
 {% extends "base.html" %}
 
+{% block title %}{{ show.name }} | ShowScout{% endblock %}
+
 {% block content %}
+<div class="ss-hero mb-3">
+    <div class="ss-kicker mb-2">Current Show</div>
+    <h1 class="ss-title mb-2">{{ show.name }}</h1>
+    <p class="ss-subtitle mb-0">
+        {{ show.venue or 'No venue entered' }}{% if show.show_date %} · {{ show.show_date }}{% endif %}
+    </p>
+</div>
 
-<h2>{{ show.name }}</h2>
-
-<p>{{ show.venue or "" }}</p>
-
-<a class="btn btn-warning w-100 mb-3"
-   href="{{ url_for('add_find', show_id=show.id) }}">
+<a class="btn btn-warning ss-big-btn w-100 mb-3" href="{{ url_for('add_find', show_id=show.id) }}">
     + Add Find
 </a>
 
-{% if show.finds %}
-
-    {% for find in show.finds %}
-
-        <div class="card mb-2">
-            <div class="card-body">
-
-                <strong>
-                    Table {{ find.table_number or "?" }}
-                </strong>
-
-                <br>
-
-                {{ find.dealer_name or "Unknown Dealer" }}
-
-            </div>
-        </div>
-
-    {% endfor %}
-
-{% else %}
-
-    <div class="alert alert-info">
-        No finds saved yet.
+<div class="card ss-card mb-3">
+    <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+        <span>Saved Finds</span>
+        <span class="badge text-bg-info">{{ finds|length }}</span>
     </div>
+    <div class="card-body">
+        {% if finds %}
+            {% for find in finds %}
+                <a class="ss-show-row" href="{{ url_for('find_detail', find_id=find.id) }}">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <div>
+                            <div class="fw-bold fs-5 lh-sm">
+                                Table {{ find.table_number or '?' }}
+                            </div>
+                            <div class="ss-muted small mt-1">
+                                {{ find.dealer_name or 'Unknown dealer' }}
+                                {% if find.price_seen is not none %} · ${{ "%.2f"|format(find.price_seen) }}{% endif %}
+                            </div>
+                            <div class="mt-2 d-flex flex-wrap gap-2">
+                                <span class="badge text-bg-secondary">{{ find.card_type or 'Raw' }}</span>
+                                <span class="badge {% if find.status == 'Bought' %}text-bg-success{% elif find.status == 'Passed' %}text-bg-secondary{% else %}text-bg-warning{% endif %}">
+                                    {{ find.status or 'Interested' }}
+                                </span>
+                            </div>
+                            {% if find.notes %}
+                                <div class="ss-muted small mt-2">{{ find.notes }}</div>
+                            {% endif %}
+                        </div>
+                        <span class="badge text-bg-info">View</span>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-4">
+                <div class="fs-4 fw-bold mb-2">No finds yet</div>
+                <p class="ss-muted mb-3">Add a card or item you may want to come back to later.</p>
+                <a class="btn btn-warning ss-big-btn w-100" href="{{ url_for('add_find', show_id=show.id) }}">Add First Find</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
 
-{% endif %}
-
+<div class="d-grid gap-2">
+    <a class="btn btn-outline-light ss-big-btn" href="{{ url_for('home') }}">Back to My Shows</a>
+</div>
 {% endblock %}
