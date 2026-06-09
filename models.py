@@ -10,6 +10,8 @@ class Show(db.Model):
     venue = db.Column(db.String(150))
     show_date = db.Column(db.String(20))
     notes = db.Column(db.Text)
+    is_archived = db.Column(db.Boolean, nullable=False, default=False, server_default="0")
+    archived_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 

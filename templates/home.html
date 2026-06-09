@@ -11,41 +11,77 @@
     </p>
 </div>
 
+<div class="d-grid gap-2 d-sm-flex mb-3">
+    <a class="btn {% if view != 'archived' %}btn-warning{% else %}btn-outline-light{% endif %} ss-big-btn flex-fill" href="{{ url_for('home') }}">
+        Active Shows <span class="badge text-bg-dark ms-1">{{ active_count }}</span>
+    </a>
+    <a class="btn {% if view == 'archived' %}btn-info{% else %}btn-outline-info{% endif %} ss-big-btn flex-fill" href="{{ url_for('home', view='archived') }}">
+        Archived Shows <span class="badge text-bg-dark ms-1">{{ archived_count }}</span>
+    </a>
+</div>
+
+{% if view != 'archived' %}
+    <a class="btn btn-warning ss-big-btn w-100 mb-3" href="{{ url_for('create_show') }}">+ Create Show</a>
+{% endif %}
+
 <div class="card ss-card mb-3">
     <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-        <span>My Shows</span>
+        <span>{% if view == 'archived' %}Archived Shows{% else %}My Shows{% endif %}</span>
         <span class="badge text-bg-info">{{ shows|length }}</span>
     </div>
     <div class="card-body">
         {% if shows %}
             {% for show in shows %}
-                <a class="ss-show-row" href="{{ url_for('show_detail', show_id=show.id) }}">
+                <div class="ss-show-row mb-3">
                     <div class="d-flex justify-content-between align-items-start gap-2">
-                        <div>
+                        <div class="flex-grow-1">
                             <div class="fw-bold fs-5 lh-sm">{{ show.name }}</div>
                             <div class="ss-muted small mt-1">
                                 {{ show.venue or 'No venue entered' }}
                                 {% if show.show_date %} · {{ show.show_date }}{% endif %}
                             </div>
+                            <div class="ss-muted small mt-2">
+                                {{ show.finds|length }} saved find{% if show.finds|length != 1 %}s{% endif %}
+                            </div>
                             {% if show.notes %}
                                 <div class="ss-muted small mt-2">{{ show.notes }}</div>
                             {% endif %}
                         </div>
-                        <span class="badge text-bg-warning">Open</span>
+                        {% if show.is_archived %}
+                            <span class="badge text-bg-secondary">Archived</span>
+                        {% else %}
+                            <span class="badge text-bg-warning">Open</span>
+                        {% endif %}
                     </div>
-                </a>
+
+                    <div class="d-grid gap-2 d-sm-flex mt-3">
+                        <a class="btn btn-outline-light ss-big-btn flex-fill" href="{{ url_for('show_detail', show_id=show.id) }}">View Show</a>
+
+                        {% if show.is_archived %}
+                            <form method="POST" action="{{ url_for('restore_show', show_id=show.id) }}" class="flex-fill">
+                                <button class="btn btn-info ss-big-btn w-100" type="submit">Restore Show</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('archive_show', show_id=show.id) }}" class="flex-fill" onsubmit="return confirm('Archive this show? Your saved finds will stay saved.');">
+                                <button class="btn btn-outline-info ss-big-btn w-100" type="submit">Archive Show</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
             {% endfor %}
         {% else %}
             <div class="text-center py-4">
-                <div class="fs-4 fw-bold mb-2">No shows yet</div>
-                <p class="ss-muted mb-3">Create the show you are walking, then start saving cards you may want to revisit.</p>
-                <a class="btn btn-warning ss-big-btn w-100" href="{{ url_for('create_show') }}">Create Your First Show</a>
+                {% if view == 'archived' %}
+                    <div class="fs-4 fw-bold mb-2">No archived shows</div>
+                    <p class="ss-muted mb-3">Archive old shows after the weekend so your active list stays clean.</p>
+                    <a class="btn btn-warning ss-big-btn w-100" href="{{ url_for('home') }}">Back to Active Shows</a>
+                {% else %}
+                    <div class="fs-4 fw-bold mb-2">No shows yet</div>
+                    <p class="ss-muted mb-3">Create the show you are walking, then start saving cards you may want to revisit.</p>
+                    <a class="btn btn-warning ss-big-btn w-100" href="{{ url_for('create_show') }}">Create Your First Show</a>
+                {% endif %}
             </div>
         {% endif %}
     </div>
-</div>
-
-<div class="ss-mobile-action-bar d-sm-none">
-    <a class="btn btn-warning ss-big-btn w-100" href="{{ url_for('create_show') }}">+ Create Show</a>
 </div>
 {% endblock %}

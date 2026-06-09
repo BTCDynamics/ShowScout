@@ -4,6 +4,7 @@ from pathlib import Path
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlalchemy import inspect, text
+from sqlalchemy.sql import func
 from werkzeug.utils import secure_filename
 
 from models import db, Show, Find
@@ -72,7 +73,27 @@ def ensure_database_columns():
     """Add newer columns to an existing local SQLite database without wiping data."""
     inspector = inspect(db.engine)
 
-    if "find" not in inspector.get_table_names():
+    table_names = inspector.get_table_names()
+
+    if "show" in table_names:
+        existing_show_columns = {
+            column["name"]
+            for column in inspector.get_columns("show")
+        }
+
+        if "is_archived" not in existing_show_columns:
+            db.session.execute(
+                text("ALTER TABLE show ADD COLUMN is_archived BOOLEAN DEFAULT 0 NOT NULL")
+            )
+            db.session.commit()
+
+        if "archived_at" not in existing_show_columns:
+            db.session.execute(
+                text("ALTER TABLE show ADD COLUMN archived_at DATETIME")
+            )
+            db.session.commit()
+
+    if "find" not in table_names:
         return
 
     existing_columns = {
@@ -112,8 +133,25 @@ with app.app_context():
 
 @app.route("/")
 def home():
-    shows = Show.query.order_by(Show.created_at.desc(), Show.id.desc()).all()
-    return render_template("home.html", shows=shows)
+    view = request.args.get("view", "active")
+    show_archived = view == "archived"
+
+    shows = (
+        Show.query
+        .filter(Show.is_archived.is_(show_archived))
+        .order_by(Show.created_at.desc(), Show.id.desc())
+        .all()
+    )
+    active_count = Show.query.filter(Show.is_archived.is_(False)).count()
+    archived_count = Show.query.filter(Show.is_archived.is_(True)).count()
+
+    return render_template(
+        "home.html",
+        shows=shows,
+        view=view,
+        active_count=active_count,
+        archived_count=archived_count,
+    )
 
 
 @app.route("/create-show", methods=["GET", "POST"])
@@ -165,6 +203,10 @@ def show_detail(show_id):
 def add_find(show_id):
     show = Show.query.get_or_404(show_id)
 
+    if show.is_archived:
+        flash("This show is archived. Restore it before adding new finds.")
+        return redirect(url_for("show_detail", show_id=show.id))
+
     if request.method == "POST":
         table_number = (request.form.get("table_number") or "").strip() or None
         dealer_name = (request.form.get("dealer_name") or "").strip() or None
@@ -199,6 +241,26 @@ def add_find(show_id):
         return redirect(url_for("show_detail", show_id=show.id))
 
     return render_template("add_find.html", show=show)
+
+
+@app.route("/show/<int:show_id>/archive", methods=["POST"])
+def archive_show(show_id):
+    show = Show.query.get_or_404(show_id)
+    show.is_archived = True
+    show.archived_at = func.now()
+    db.session.commit()
+    flash(f"Archived show: {show.name}")
+    return redirect(url_for("home"))
+
+
+@app.route("/show/<int:show_id>/restore", methods=["POST"])
+def restore_show(show_id):
+    show = Show.query.get_or_404(show_id)
+    show.is_archived = False
+    show.archived_at = None
+    db.session.commit()
+    flash(f"Restored show: {show.name}")
+    return redirect(url_for("show_detail", show_id=show.id))
 
 
 @app.route("/find/<int:find_id>")
